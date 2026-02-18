@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RUBRIC - איתור רובריקות (גרסה אוטומטית)</title>
+    <title>RUBRIC - מאגר רובריקות עטרה</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -19,7 +19,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: auto;
             background: white;
             padding: 25px;
@@ -39,7 +39,7 @@
         }
         input[type="text"] {
             width: 100%;
-            padding: 12px 45px 12px 15px;
+            padding: 12px 15px;
             font-size: 18px;
             border: 2px solid #ddd;
             border-radius: 8px;
@@ -52,11 +52,13 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
+            table-layout: fixed;
         }
         th, td {
             padding: 12px 15px;
             text-align: right;
             border-bottom: 1px solid #eee;
+            word-wrap: break-word;
         }
         th {
             background-color: var(--primary-color);
@@ -72,20 +74,22 @@
             border-radius: 4px;
             font-weight: bold;
             font-size: 0.9em;
+            display: inline-block;
         }
-        .copy-btn {
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: #999;
-            margin-right: 8px;
+        .notes-cell {
+            color: #666;
+            font-size: 0.9em;
+            font-style: italic;
         }
-        .copy-btn:hover { color: var(--accent-color); }
         .status-msg {
             text-align: center;
             color: #666;
             font-style: italic;
             margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            table { font-size: 14px; }
+            th, td { padding: 8px; }
         }
     </style>
 </head>
@@ -94,21 +98,22 @@
 <div class="container">
     <header>
         <h1>RUBRIC - מאגר רובריקות עטרה</h1>
-        <p>הנתונים נמשכים אוטומטית מגיליון גוגל</p>
+        <p>עדכון אוטומטי מגיליון Google Sheets</p>
     </header>
 
     <div class="search-box">
-        <input type="text" id="searchInput" placeholder="חפש תרופה, רובריקה באנגלית או תיאור בעברית..." onkeyup="filterTable()">
+        <input type="text" id="searchInput" placeholder="חפש תרופה, אנגלית, עברית או הערות..." onkeyup="filterTable()">
     </div>
 
-    <div id="status" class="status-msg">טוען נתונים מהענן...</div>
+    <div id="status" class="status-msg">מתחבר למסד הנתונים...</div>
 
-    <table>
+    <table id="rubricTable">
         <thead>
             <tr>
-                <th style="width: 15%;">תרופה</th>
-                <th style="width: 40%;">רובריקה (ENG)</th>
-                <th style="width: 45%;">תרגום (HEB)</th>
+                <th style="width: 12%;">תרופה</th>
+                <th style="width: 30%;">רובריקה (ENG)</th>
+                <th style="width: 30%;">תרגום (HEB)</th>
+                <th style="width: 28%;">הערות (Notes)</th>
             </tr>
         </thead>
         <tbody id="tableBody">
@@ -117,8 +122,8 @@
 </div>
 
 <script>
-    // הקישור שקיבלת מגוגל שיטס (קובץ -> פרסום באינטרנט -> CSV)
-    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_3Yju4wccOqBM5OohlEbiY5XA2Vz_3uHGfz_Qn54fbyTkYTkgX95Fy7BFuP7cZFc_vgmzOEHBwCbs/pub?output=csv';
+    // הדביקי כאן את הקישור שקיבלת מגוגל שיטס (חייב להסתיים ב-output=csv)
+    const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_3Yju4wccOqBM5OohlEbiY5XA2Vz_3uHGfz_Qn54fbyTkYTkgX95Fy7BFuP7cZFc_vgmzOEHBwCbs/pubhtml';
 
     let rubricData = [];
 
@@ -132,24 +137,26 @@
             rubricData = parseCSV(data);
             
             renderTable(rubricData);
-            statusDiv.innerText = `נטענו ${rubricData.length} רובריקות בהצלחה.`;
+            statusDiv.innerText = `נטענו ${rubricData.length} שורות מהמאגר של עטרה.`;
         } catch (error) {
             console.error(error);
             statusDiv.innerHTML = "<b style='color:red;'>שגיאה בטעינת הנתונים. ודא שהקישור תקין ושהגיליון פורסם כ-CSV.</b>";
         }
     }
 
-function parseCSV(csv) {
+    function parseCSV(csv) {
         const lines = csv.split('\n');
+        // הסבר: המערך מתחיל מ-1 כדי לדלג על שורת הכותרות בגיליון
         return lines.slice(1).map(line => {
+            //Regex לטיפול בפסיקים בתוך מרכאות
             const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             return {
                 remedy: (cols[0] || "").replace(/"/g, '').trim(),
                 eng: (cols[1] || "").replace(/"/g, '').trim(),
                 heb: (cols[2] || "").replace(/"/g, '').trim(),
-                notes: (cols[3] || "").replace(/"/g, '').trim() // עמודת הערות
+                notes: (cols[3] || "").replace(/"/g, '').trim()
             };
-        }).filter(item => item.remedy || item.eng);
+        }).filter(item => item.remedy || item.eng || item.heb);
     }
 
     function renderTable(data) {
@@ -161,6 +168,7 @@ function parseCSV(csv) {
                 <td><span class="remedy-badge">${item.remedy}</span></td>
                 <td dir="ltr" style="text-align: left;">${item.eng}</td>
                 <td>${item.heb}</td>
+                <td class="notes-cell">${item.notes}</td>
             </tr>`;
             tableBody.innerHTML += row;
         });
@@ -171,12 +179,12 @@ function parseCSV(csv) {
         const filtered = rubricData.filter(item => 
             item.remedy.toLowerCase().includes(query) || 
             item.eng.toLowerCase().includes(query) || 
-            item.heb.toLowerCase().includes(query)
+            item.heb.toLowerCase().includes(query) ||
+            item.notes.toLowerCase().includes(query)
         );
         renderTable(filtered);
     }
 
-    // טעינה ראשונית
     loadData();
 </script>
 
