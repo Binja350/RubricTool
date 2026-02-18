@@ -186,19 +186,24 @@
         const t = document.getElementById("toast");
         t.classList.add("show");
         setTimeout(() => t.classList.remove("show"), 2000);
-    }
-
-    // --- הטעינה מהקובץ החיצוני ---
-    async function loadData() {
+async function loadData() {
         try {
-            // האתר יחפש קובץ בשם data.txt באותה תיקייה ב-GitHub
-            const response = await fetch('data.txt');
+            // כעת האתר טוען את קובץ ה-JSON ישירות
+            const response = await fetch('data.json');
             if (!response.ok) throw new Error("לא נמצא קובץ נתונים");
-            const text = await response.text();
-            allData = parseData(text);
+            
+            // המרה אוטומטית למערך
+            allData = await response.json();
+            
+            // הוספת האימוג'ים דינמית לפי המילים באנגלית
+            allData = allData.map(item => ({
+                ...item,
+                emoji: getEmoji(item.eng)
+            }));
+            
             renderTable(allData);
         } catch (err) {
-            document.getElementById("rowCount").innerText = "שגיאה בטעינת data.txt";
+            document.getElementById("rowCount").innerText = "שגיאה בטעינת data.json";
             console.error(err);
         }
     }
