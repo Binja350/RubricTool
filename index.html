@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RUBRIC - איתור רובריקות חכם</title>
+    <title>RUBRIC TOOL - PRO</title>
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -14,214 +14,74 @@
             --border-color: #e0e0e0;
         }
 
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 15px;
-            line-height: 1.6;
-        }
+        body { background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 10px; line-height: 1.6; }
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-        }
+        .container { max-width: 1200px; margin: auto; background: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
 
-        header {
-            text-align: center;
-            border-bottom: 3px solid var(--primary-color);
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-        }
+        header { text-align: center; border-bottom: 3px solid var(--primary-color); margin-bottom: 20px; padding-bottom: 10px; }
+        
+        h1 { color: var(--primary-color); margin: 0; font-size: 1.8em; }
 
-        h1 { color: var(--primary-color); margin: 0 0 5px 0; font-size: 2em; }
-        p.subtitle { color: #666; margin: 0; font-size: 0.9em; }
+        .search-area { position: sticky; top: 0; background: var(--card-bg); padding: 10px 0; z-index: 100; border-bottom: 1px solid var(--border-color); margin-bottom: 15px; }
 
-        /* Search Area - Sticky */
-        .search-area {
-            position: sticky;
-            top: 0;
-            background: var(--card-bg);
-            padding: 15px 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-
-        .search-wrapper {
-            position: relative;
-            width: 100%;
-        }
+        .search-wrapper { position: relative; width: 100%; }
 
         input[type="text"] {
             width: 100%;
-            padding: 15px 45px 15px 15px;
+            padding: 12px 40px 12px 12px;
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 16px;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.3s;
         }
 
-        input[type="text"]:focus {
-            border-color: var(--accent-color);
-            outline: none;
-            box-shadow: 0 0 8px rgba(39, 174, 96, 0.2);
-        }
+        input[type="text"]:focus { border-color: var(--accent-color); outline: none; }
 
-        .search-icon {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2em;
-            color: #888;
-        }
+        .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; }
 
-        .row-count { text-align: right; color: #888; font-size: 0.85em; margin-top: 8px; font-weight: bold; }
+        .row-count { text-align: right; color: #666; font-size: 0.8em; margin-top: 5px; font-weight: bold; }
 
-        /* Table & Cards Styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        /* Table & Responsive Cards */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: right; border-bottom: 1px solid var(--border-color); }
+        th { background-color: var(--primary-color); color: white; }
 
-        th, td {
-            padding: 15px;
-            text-align: right;
-            border-bottom: 1px solid var(--border-color);
-        }
+        .rubric-eng { direction: ltr; text-align: left; font-weight: 600; color: #2c3e50; display: block; font-size: 0.95em; }
 
-        th {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        tr { transition: background-color 0.2s; }
-        tr:hover { background-color: #f9fbf9; }
-
-        .rubric-eng {
-            direction: ltr;
-            text-align: left;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 600;
-            color: #2c3e50;
-            display: block;
-        }
-
-        .remedy-tag {
-            display: inline-block;
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.85em;
-            border: 1px solid #c8e6c9;
-        }
+        .remedy-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 15px; font-weight: bold; font-size: 0.8em; border: 1px solid #c8e6c9; }
 
         .copy-btn {
-            background-color: transparent;
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
             border-radius: 4px;
-            padding: 4px 8px;
+            padding: 5px 10px;
             cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
+            font-size: 11px;
             margin-top: 5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
         }
 
-        .copy-btn:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
+        .copy-btn:active { background-color: #e2e6ea; }
 
-        .emoji-cell { font-size: 1.5em; text-align: center; }
+        .emoji-cell { font-size: 1.4em; text-align: center; }
 
-        /* Toast Notification */
+        /* Toast */
         .toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1000;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            font-size: 15px;
-            opacity: 0;
-            transition: opacity 0.3s, bottom 0.3s;
+            visibility: hidden; min-width: 200px; background: #333; color: #fff; text-align: center;
+            border-radius: 5px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 30px;
+            transform: translateX(-50%); opacity: 0; transition: opacity 0.3s;
         }
-        .toast.show {
-            visibility: visible;
-            opacity: 1;
-            bottom: 50px;
-        }
+        .toast.show { visibility: visible; opacity: 1; }
 
-        /* 📱 RESPONSIVE DESIGN - MOBILE CARDS 📱 */
+        /* Mobile Adjustments */
         @media screen and (max-width: 768px) {
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-            
-            thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-            
-            tr {
-                background: white;
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                margin-bottom: 15px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-                padding: 10px;
-            }
-            
-            td {
-                border: none;
-                border-bottom: 1px dashed #eee;
-                position: relative;
-                padding-right: 40%; 
-                text-align: left;
-                min-height: 40px;
-            }
-
-            td:last-child { border-bottom: 0; }
-            
-            td::before {
-                content: attr(data-label);
-                position: absolute;
-                right: 10px;
-                width: 35%;
-                white-space: nowrap;
-                font-weight: bold;
-                color: var(--primary-color);
-                text-align: right;
-            }
-
-            .rubric-eng { text-align: left; margin-bottom: 10px; }
-            .emoji-cell { text-align: right; padding-right: 40%; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; }
+            tr { border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 15px; padding: 10px; background: #fff; }
+            td { border: none; border-bottom: 1px solid #eee; position: relative; padding-right: 35%; text-align: left; }
+            td::before { content: attr(data-label); position: absolute; right: 10px; font-weight: bold; color: var(--primary-color); }
+            .rubric-eng { text-align: left; }
         }
     </style>
 </head>
@@ -230,15 +90,14 @@
 <div class="container">
     <header>
         <h1>RUBRIC TOOL 💎</h1>
-        <p class="subtitle">איתור רובריקות חכם - מותאם למובייל ומסנכרן אוטומטית</p>
     </header>
 
     <div class="search-area">
         <div class="search-wrapper">
             <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="חיפוש חכם (למשל: 'פחד לבד', 'עצירות Nux')...">
+            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="חיפוש חופשי (למשל: 'עצירות' או 'Ars')...">
         </div>
-        <div class="row-count" id="rowCount">טוען נתונים...</div>
+        <div class="row-count" id="rowCount">טוען נתונים מהקובץ...</div>
     </div>
 
     <table id="rubricTable">
@@ -246,162 +105,105 @@
             <tr>
                 <th width="5%">סוג</th>
                 <th width="15%">רמדי</th>
-                <th width="40%">רובריקה (אנגלית)</th>
-                <th width="40%">תרגום (עברית)</th>
+                <th width="40%">רובריקה (EN)</th>
+                <th width="40%">תרגום (HE)</th>
             </tr>
         </thead>
-        <tbody id="tableBody">
-            </tbody>
+        <tbody id="tableBody"></tbody>
     </table>
 </div>
 
 <div id="toast" class="toast">הועתק ללוח!</div>
 
 <script>
-    /* =========================================================================
-       1. מדמה את מסמך הגוגל דוקס של עטרה (RAW TEXT).
-       היא פשוט כותבת את שם הרמדי, ומתחתיה את הרובריקות מופרדות במקף (-)
-       ========================================================================= */
-    const rawDocText = `
-    Nux Vomica
-    Rectum; CONSTIPATION; alternating with diarrhea - עצירות מתחלפת עם שלשול
-    Rectum; CONSTIPATION; ineffectual urging and straining - עצירות, דחף לא יעיל ומאמץ
-    Mind; AMBITIOUS; means; employed every possible - אמביציוזי, משתמש בכל האמצעים
-    Mind; QUIET; wants to be - רוצה שקט, תשוקה למנוחה ושלווה
+    let allData = [];
 
-    Arsenicum Album
-    Mind; REST; cannot when things are not in proper place - לא יכול לנוח כשדברים אינם במקומם
-    Mind; FASTIDIOUS - קפדנות / אנינות טעם
-    Mind; FEAR; alone; of being - פחד להיות לבד
-
-    Apis
-    Mind; MIRTH; hilarity - עליצות, שמחה מוגזמת
-    Mind; FEAR; pins; pointed sharp things; of - פחד מסיכות, מחטים, דברים חדים
-    Bladder; URINATION; difficult; dysuria; agonizing - השתנה קשה, מייסרת
-
-    Natrum Mur
-    Mind; DWELLS; events on past disagreeable - מחטט באירועים לא נעימים מהעבר
-    Mind; GRIEF; silent - צער שקט / מופנם
-    Mind; CONSOLATION; agg - החמרה מניחומים
-    `;
-
-    let parsedData = [];
-
-    // פונקציה לבחירת אימוג'י לפי טקסט (לזיהוי מהיר בעין)
+    // פונקציית האימוג'ים
     function getEmoji(text) {
         const lower = text.toLowerCase();
         if (lower.includes("mind")) return "🧠";
-        if (lower.includes("rectum") || lower.includes("stomach") || lower.includes("abdomen")) return "🚽";
-        if (lower.includes("bladder") || lower.includes("urine")) return "💧";
-        if (lower.includes("chest") || lower.includes("cough")) return "🫁";
+        if (lower.includes("rectum") || lower.includes("stomach")) return "🚽";
+        if (lower.includes("bladder") || lower.includes("urin")) return "💧";
         if (lower.includes("sleep")) return "😴";
-        return "🤒";
+        if (lower.includes("head")) return "🤕";
+        return "📋";
     }
 
-    /* =========================================================================
-       2. פונקציית ה"שנאי" - מפענחת את הטקסט החופשי של עטרה והופכת אותו לנתונים
-       ========================================================================= */
-    function parseDocText(text) {
-        const lines = text.split('\\n');
-        let currentRemedy = "Unknown";
-        const data = [];
+    // הפענוח של הטקסט מהקובץ החיצוני
+    function parseData(text) {
+        const lines = text.split('\n');
+        let currentRemedy = "כללי";
+        const results = [];
 
         lines.forEach(line => {
-            let cleanLine = line.trim();
-            if (!cleanLine) return; // דילוג על שורות ריקות
+            const cleanLine = line.trim();
+            if (!cleanLine) return;
 
-            // אם השורה לא מכילה מקף מפריד, סביר להניח שזו כותרת של רמדי (למשל Nux Vomica)
             if (!cleanLine.includes('-') && !cleanLine.includes('–') && !cleanLine.includes('—')) {
                 currentRemedy = cleanLine;
-                return;
-            }
-
-            // חיתוך השורה לאנגלית ועברית לפי המקף
-            // משתמשים ב-Regex כדי לתפוס את כל סוגי המקפים שעטרה עלולה להקליד
-            const parts = cleanLine.split(/\\s*[-–—]\\s*/);
-            
-            if (parts.length >= 2) {
-                const eng = parts[0].trim();
-                const heb = parts[1].trim();
-                
-                // הוספה למסד הנתונים
-                data.push({
-                    remedy: currentRemedy,
-                    eng: eng,
-                    heb: heb,
-                    emoji: getEmoji(eng)
-                });
+            } else {
+                const parts = cleanLine.split(/\s*[-–—]\s*/);
+                if (parts.length >= 2) {
+                    results.push({
+                        remedy: currentRemedy,
+                        eng: parts[0].trim(),
+                        heb: parts[1].trim(),
+                        emoji: getEmoji(parts[0])
+                    });
+                }
             }
         });
-        return data;
+        return results;
     }
 
-    /* =========================================================================
-       3. בניית הטבלה מתוך הנתונים
-       ========================================================================= */
-    function renderTable(dataArray) {
+    function renderTable(data) {
         const tbody = document.getElementById("tableBody");
-        tbody.innerHTML = "";
-        
-        dataArray.forEach(item => {
-            const row = document.createElement("tr");
-            
-            // תצוגת רמדי מקוצרת ונקייה
-            const remedyClass = item.remedy.split(" ")[0]; // Nux, Ars וכו'
-
-            row.innerHTML = \`
-                <td data-label="קטגוריה" class="emoji-cell">\${item.emoji}</td>
-                <td data-label="רמדי"><span class="remedy-tag">\${item.remedy}</span></td>
-                <td data-label="אנגלית (Zomeo)">
-                    <span class="rubric-eng">\${item.eng}</span>
-                    <button class="copy-btn" onclick="copyText('\${item.eng.replace(/'/g, "\\'")}')">
-                        📋 העתק רובריקה
-                    </button>
+        tbody.innerHTML = data.map(item => `
+            <tr>
+                <td data-label="סוג" class="emoji-cell">${item.emoji}</td>
+                <td data-label="רמדי"><span class="remedy-tag">${item.remedy}</span></td>
+                <td data-label="רובריקה">
+                    <span class="rubric-eng">${item.eng}</span>
+                    <button class="copy-btn" onclick="copyText('${item.eng.replace(/'/g, "\\'")}')">📋 העתק</button>
                 </td>
-                <td data-label="עברית">\${item.heb}</td>
-            \`;
-            tbody.appendChild(row);
-        });
-        
-        document.getElementById("rowCount").innerText = \`מציג \${dataArray.length} רובריקות\`;
+                <td data-label="תרגום">${item.heb}</td>
+            </tr>
+        `).join('');
+        document.getElementById("rowCount").innerText = `מציג ${data.length} תוצאות`;
     }
 
-    /* =========================================================================
-       4. חיפוש חכם - "AND Logic"
-       ========================================================================= */
     function filterTable() {
-        const input = document.getElementById("searchInput").value.toLowerCase();
-        // מפרק את החיפוש למילים נפרדות (לדוגמה: "פחד לבד" יהפוך ל- ["פחד", "לבד"])
-        const keywords = input.split(' ').filter(word => word.length > 0);
-        
-        const filteredData = parsedData.filter(item => {
-            // מאחדים את כל התוכן של השורה לטקסט אחד לחיפוש קל
-            const rowContent = \`\${item.heb} \${item.eng} \${item.remedy}\`.toLowerCase();
-            
-            // בודק ש*כל* המילים שחופשו נמצאות בשורה זו
-            return keywords.every(keyword => rowContent.includes(keyword));
+        const query = document.getElementById("searchInput").value.toLowerCase().split(' ');
+        const filtered = allData.filter(item => {
+            const content = `${item.eng} ${item.heb} ${item.remedy}`.toLowerCase();
+            return query.every(word => content.includes(word));
         });
-        
-        renderTable(filteredData);
+        renderTable(filtered);
     }
 
-    /* =========================================================================
-       5. העתקה ללוח (Clipboard) עם חיווי ויזואלי (Toast)
-       ========================================================================= */
     function copyText(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            const toast = document.getElementById("toast");
-            toast.className = "toast show";
-            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2500);
-        });
+        navigator.clipboard.writeText(text);
+        const t = document.getElementById("toast");
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2000);
     }
 
-    // הפעלה ראשונית בעת טעינת הדף
-    window.onload = () => {
-        parsedData = parseDocText(rawDocText);
-        renderTable(parsedData);
-    };
+    // --- הטעינה מהקובץ החיצוני ---
+    async function loadData() {
+        try {
+            // האתר יחפש קובץ בשם data.txt באותה תיקייה ב-GitHub
+            const response = await fetch('data.txt');
+            if (!response.ok) throw new Error("לא נמצא קובץ נתונים");
+            const text = await response.text();
+            allData = parseData(text);
+            renderTable(allData);
+        } catch (err) {
+            document.getElementById("rowCount").innerText = "שגיאה בטעינת data.txt";
+            console.error(err);
+        }
+    }
 
+    window.onload = loadData;
 </script>
 </body>
 </html>
