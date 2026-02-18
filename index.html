@@ -137,7 +137,7 @@
             rubricData = parseCSV(data);
             
             renderTable(rubricData);
-            statusDiv.innerText = `נטענו ${rubricData.length} שורות מהמאגר של עטרה.`;
+            statusDiv.innerText = `נטענו ${rubricData.length} רובריקות מהמאגר של עטרה.`;
         } catch (error) {
             console.error(error);
             statusDiv.innerHTML = "<b style='color:red;'>שגיאה בטעינת הנתונים. ודא שהקישור תקין ושהגיליון פורסם כ-CSV.</b>";
