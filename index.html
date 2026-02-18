@@ -3,85 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RUBRIC TOOL - PRO</title>
+    <title>RUBRIC - איתור רובריקות (גרסה אוטומטית)</title>
     <style>
         :root {
             --primary-color: #2c3e50;
             --accent-color: #27ae60;
             --bg-color: #f4f7f6;
             --text-color: #333;
-            --card-bg: #ffffff;
-            --border-color: #e0e0e0;
         }
-
-        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-
-        body { background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 10px; line-height: 1.6; }
-
-        .container { max-width: 1200px; margin: auto; background: var(--card-bg); padding: 15px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-
-        header { text-align: center; border-bottom: 3px solid var(--primary-color); margin-bottom: 20px; padding-bottom: 10px; }
-        
-        h1 { color: var(--primary-color); margin: 0; font-size: 1.8em; }
-
-        .search-area { position: sticky; top: 0; background: var(--card-bg); padding: 10px 0; z-index: 100; border-bottom: 1px solid var(--border-color); margin-bottom: 15px; }
-
-        .search-wrapper { position: relative; width: 100%; }
-
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+        }
+        h1 { color: var(--primary-color); margin: 0; }
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
         input[type="text"] {
             width: 100%;
-            padding: 12px 40px 12px 12px;
+            padding: 12px 45px 12px 15px;
+            font-size: 18px;
             border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
         }
-
-        input[type="text"]:focus { border-color: var(--accent-color); outline: none; }
-
-        .search-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; }
-
-        .row-count { text-align: right; color: #666; font-size: 0.8em; margin-top: 5px; font-weight: bold; }
-
-        /* Table & Responsive Cards */
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px; text-align: right; border-bottom: 1px solid var(--border-color); }
-        th { background-color: var(--primary-color); color: white; }
-
-        .rubric-eng { direction: ltr; text-align: left; font-weight: 600; color: #2c3e50; display: block; font-size: 0.95em; }
-
-        .remedy-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 15px; font-weight: bold; font-size: 0.8em; border: 1px solid #c8e6c9; }
-
-        .copy-btn {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
+        input[type="text"]:focus { border-color: var(--accent-color); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover { background-color: #f9f9f9; }
+        .remedy-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 8px;
             border-radius: 4px;
-            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .copy-btn {
             cursor: pointer;
-            font-size: 11px;
-            margin-top: 5px;
+            background: none;
+            border: none;
+            color: #999;
+            margin-right: 8px;
         }
-
-        .copy-btn:active { background-color: #e2e6ea; }
-
-        .emoji-cell { font-size: 1.4em; text-align: center; }
-
-        /* Toast */
-        .toast {
-            visibility: hidden; min-width: 200px; background: #333; color: #fff; text-align: center;
-            border-radius: 5px; padding: 10px; position: fixed; z-index: 1000; left: 50%; bottom: 30px;
-            transform: translateX(-50%); opacity: 0; transition: opacity 0.3s;
-        }
-        .toast.show { visibility: visible; opacity: 1; }
-
-        /* Mobile Adjustments */
-        @media screen and (max-width: 768px) {
-            table, thead, tbody, th, td, tr { display: block; }
-            thead tr { position: absolute; top: -9999px; }
-            tr { border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 15px; padding: 10px; background: #fff; }
-            td { border: none; border-bottom: 1px solid #eee; position: relative; padding-right: 35%; text-align: left; }
-            td::before { content: attr(data-label); position: absolute; right: 10px; font-weight: bold; color: var(--primary-color); }
-            .rubric-eng { text-align: left; }
+        .copy-btn:hover { color: var(--accent-color); }
+        .status-msg {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -89,126 +93,92 @@
 
 <div class="container">
     <header>
-        <h1>RUBRIC TOOL 💎</h1>
+        <h1>RUBRIC - מאגר רובריקות עטרה</h1>
+        <p>הנתונים נמשכים אוטומטית מגיליון גוגל</p>
     </header>
 
-    <div class="search-area">
-        <div class="search-wrapper">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="חיפוש חופשי (למשל: 'עצירות' או 'Ars')...">
-        </div>
-        <div class="row-count" id="rowCount">טוען נתונים מהקובץ...</div>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="חפש תרופה, רובריקה באנגלית או תיאור בעברית..." onkeyup="filterTable()">
     </div>
 
-    <table id="rubricTable">
+    <div id="status" class="status-msg">טוען נתונים מהענן...</div>
+
+    <table>
         <thead>
             <tr>
-                <th width="5%">סוג</th>
-                <th width="15%">רמדי</th>
-                <th width="40%">רובריקה (EN)</th>
-                <th width="40%">תרגום (HE)</th>
+                <th style="width: 15%;">תרופה</th>
+                <th style="width: 40%;">רובריקה (ENG)</th>
+                <th style="width: 45%;">תרגום (HEB)</th>
             </tr>
         </thead>
-        <tbody id="tableBody"></tbody>
+        <tbody id="tableBody">
+            </tbody>
     </table>
 </div>
 
-<div id="toast" class="toast">הועתק ללוח!</div>
-
 <script>
-    let allData = [];
+    // הקישור שקיבלת מגוגל שיטס (קובץ -> פרסום באינטרנט -> CSV)
+    const SHEET_URL = 'כאן_מדביקים_את_הקישור_שהעתקת';
 
-    // פונקציית האימוג'ים
-    function getEmoji(text) {
-        const lower = text.toLowerCase();
-        if (lower.includes("mind")) return "🧠";
-        if (lower.includes("rectum") || lower.includes("stomach")) return "🚽";
-        if (lower.includes("bladder") || lower.includes("urin")) return "💧";
-        if (lower.includes("sleep")) return "😴";
-        if (lower.includes("head")) return "🤕";
-        return "📋";
-    }
+    let rubricData = [];
 
-    // הפענוח של הטקסט מהקובץ החיצוני
-    function parseData(text) {
-        const lines = text.split('\n');
-        let currentRemedy = "כללי";
-        const results = [];
-
-        lines.forEach(line => {
-            const cleanLine = line.trim();
-            if (!cleanLine) return;
-
-            if (!cleanLine.includes('-') && !cleanLine.includes('–') && !cleanLine.includes('—')) {
-                currentRemedy = cleanLine;
-            } else {
-                const parts = cleanLine.split(/\s*[-–—]\s*/);
-                if (parts.length >= 2) {
-                    results.push({
-                        remedy: currentRemedy,
-                        eng: parts[0].trim(),
-                        heb: parts[1].trim(),
-                        emoji: getEmoji(parts[0])
-                    });
-                }
-            }
-        });
-        return results;
-    }
-
-    function renderTable(data) {
-        const tbody = document.getElementById("tableBody");
-        tbody.innerHTML = data.map(item => `
-            <tr>
-                <td data-label="סוג" class="emoji-cell">${item.emoji}</td>
-                <td data-label="רמדי"><span class="remedy-tag">${item.remedy}</span></td>
-                <td data-label="רובריקה">
-                    <span class="rubric-eng">${item.eng}</span>
-                    <button class="copy-btn" onclick="copyText('${item.eng.replace(/'/g, "\\'")}')">📋 העתק</button>
-                </td>
-                <td data-label="תרגום">${item.heb}</td>
-            </tr>
-        `).join('');
-        document.getElementById("rowCount").innerText = `מציג ${data.length} תוצאות`;
-    }
-
-    function filterTable() {
-        const query = document.getElementById("searchInput").value.toLowerCase().split(' ');
-        const filtered = allData.filter(item => {
-            const content = `${item.eng} ${item.heb} ${item.remedy}`.toLowerCase();
-            return query.every(word => content.includes(word));
-        });
-        renderTable(filtered);
-    }
-
-    function copyText(text) {
-        navigator.clipboard.writeText(text);
-        const t = document.getElementById("toast");
-        t.classList.add("show");
-        setTimeout(() => t.classList.remove("show"), 2000);
-async function loadData() {
+    async function loadData() {
+        const statusDiv = document.getElementById('status');
         try {
-            // כעת האתר טוען את קובץ ה-JSON ישירות
-            const response = await fetch('data.json');
-            if (!response.ok) throw new Error("לא נמצא קובץ נתונים");
+            const response = await fetch(SHEET_URL);
+            if (!response.ok) throw new Error("לא ניתן לגשת לגיליון");
             
-            // המרה אוטומטית למערך
-            allData = await response.json();
+            const data = await response.text();
+            rubricData = parseCSV(data);
             
-            // הוספת האימוג'ים דינמית לפי המילים באנגלית
-            allData = allData.map(item => ({
-                ...item,
-                emoji: getEmoji(item.eng)
-            }));
-            
-            renderTable(allData);
-        } catch (err) {
-            document.getElementById("rowCount").innerText = "שגיאה בטעינת data.json";
-            console.error(err);
+            renderTable(rubricData);
+            statusDiv.innerText = `נטענו ${rubricData.length} רובריקות בהצלחה.`;
+        } catch (error) {
+            console.error(error);
+            statusDiv.innerHTML = "<b style='color:red;'>שגיאה בטעינת הנתונים. ודא שהקישור תקין ושהגיליון פורסם כ-CSV.</b>";
         }
     }
 
-    window.onload = loadData;
+    function parseCSV(csv) {
+        const lines = csv.split('\n');
+        return lines.slice(1).map(line => {
+            // טיפול בפסיקים בתוך מרכאות
+            const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            return {
+                remedy: (cols[0] || "").replace(/"/g, '').trim(),
+                eng: (cols[1] || "").replace(/"/g, '').trim(),
+                heb: (cols[2] || "").replace(/"/g, '').trim()
+            };
+        }).filter(item => item.remedy || item.eng);
+    }
+
+    function renderTable(data) {
+        const tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = "";
+        
+        data.forEach(item => {
+            const row = `<tr>
+                <td><span class="remedy-badge">${item.remedy}</span></td>
+                <td dir="ltr" style="text-align: left;">${item.eng}</td>
+                <td>${item.heb}</td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    function filterTable() {
+        const query = document.getElementById("searchInput").value.toLowerCase();
+        const filtered = rubricData.filter(item => 
+            item.remedy.toLowerCase().includes(query) || 
+            item.eng.toLowerCase().includes(query) || 
+            item.heb.toLowerCase().includes(query)
+        );
+        renderTable(filtered);
+    }
+
+    // טעינה ראשונית
+    loadData();
 </script>
+
 </body>
 </html>
