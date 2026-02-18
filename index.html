@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RUBRIC - מאגר עטרה (זיהוי אוטומטי)</title>
+    <title>RUBRIC 💊 מאגר עטרה המלא</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -23,7 +23,7 @@
         }
 
         .container {
-            max-width: 1450px;
+            max-width: 1500px;
             margin: auto;
             background: white;
             padding: 25px;
@@ -40,9 +40,7 @@
 
         h1 { color: var(--primary); margin: 0; font-size: 2.2em; }
 
-        .search-area {
-            margin-bottom: 25px;
-        }
+        .search-area { margin-bottom: 25px; }
 
         input {
             width: 100%;
@@ -60,18 +58,9 @@
             box-shadow: 0 0 15px rgba(52,152,219,0.2);
         }
 
-        .status {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-            color: #666;
-        }
+        .status { text-align: center; margin-bottom: 10px; font-size: 0.9em; color: #666; font-weight: bold; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 
         th {
             background-color: var(--primary);
@@ -101,11 +90,27 @@
             display: inline-block;
         }
 
-        .remedy-cell { font-weight: bold; color: var(--primary); }
-        .english-text { font-family: 'Arial'; color: #444; direction: ltr; text-align: left; font-size: 0.95em; }
-        .notes-text { color: var(--note); font-size: 0.9em; font-weight: 500; }
+        .remedy-cell {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.05em;
+        }
 
-        .auto-gen { border: 1px dashed #ccc; background: #fff; } /* סימון לסוג שנוצר אוטומטית */
+        .english-text {
+            font-family: 'Arial';
+            color: #444;
+            direction: ltr;
+            text-align: left;
+            font-size: 0.95em;
+        }
+
+        .notes-text {
+            color: var(--note);
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .auto-gen { border: 1px dashed #ccc; background: #fff; }
     </style>
 </head>
 <body>
@@ -113,20 +118,20 @@
 <div class="container">
     <header>
         <h1>RUBRIC 💊 מאגר עטרה</h1>
-        <p>מערכת חכמה עם זיהוי הקשר אוטומטי</p>
+        <p>חיפוש חכם עם אימוג'ים מותאמים לרמדי ולסוג</p>
     </header>
 
     <div class="search-area">
-        <input type="text" id="searchInput" placeholder="חפשי תרופה, רובריקה או תוכן..." onkeyup="filterTable()">
+        <input type="text" id="searchInput" placeholder="חפשי תרופה (למשל: נחש), רובריקה או תוכן..." onkeyup="filterTable()">
     </div>
 
-    <div id="status" class="status">מתחבר למסד הנתונים...</div>
+    <div id="status" class="status">מתחבר למאגר...</div>
 
     <table>
         <thead>
             <tr>
                 <th style="width: 12%;">סוג</th>
-                <th style="width: 15%;">Remedies (💊)</th>
+                <th style="width: 15%;">Remedies</th>
                 <th style="width: 25%;">Rubric (ENG)</th>
                 <th style="width: 24%;">תרגום (HEB)</th>
                 <th style="width: 24%;">דגשים</th>
@@ -137,27 +142,58 @@
 </div>
 
 <script>
+    // 1. הקישור שלך (וודאי שזה הקישור המלא שמסתיים ב-output=csv)
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_3Yju4wccOqBM5OohlEbiY5XA2Vz_3uHGfz_Qn54fbyTkYTkgX95Fy7BFuP7cZFc_vgmzOEHBwCbs/pub?output=csv';
 
     let rubricData = [];
 
-    // פונקציה משופרת: מזהה סוג גם אם התא בגיליון ריק
+    // פונקציה לקבלת אימוג'י ייחודי לכל רמדי
+    function getRemedyEmoji(name) {
+        if (!name) return '💊';
+        const n = name.toLowerCase();
+        
+        // מיפוי רמדיס לאימוג'ים
+        if (n.includes('lach')) return '🐍'; // Lachesis
+        if (n.includes('apis')) return '🐝'; // Apis
+        if (n.includes('nux')) return '🪵';  // Nux-V
+        if (n.includes('ars')) return '🧪';  // Arsenicum
+        if (n.includes('nat-m')) return '🧂'; // Nat-mur
+        if (n.includes('arn')) return '🌼';  // Arnica
+        if (n.includes('puls')) return '🌸'; // Pulsatilla
+        if (n.includes('sep')) return '🦑';  // Sepia
+        if (n.includes('ign')) return '💔';  // Ignatia
+        if (n.includes('aur')) return '💰';  // Aurum
+        if (n.includes('sil')) return '💎';  // Silica
+        if (n.includes('rhus')) return '🌿'; // Rhus-t
+        if (n.includes('sulph')) return '🌋'; // Sulphur
+        if (n.includes('calc')) return '🐚'; // Calcarea
+        if (n.includes('lyc')) return '🪁';  // Lycopodium
+        if (n.includes('bell')) return '🏮'; // Belladonna
+        if (n.includes('tub')) return '🚂';  // Tuberculinum
+        if (n.includes('phos')) return '💡'; // Phosphorus
+        if (n.includes('arg-n')) return '🥈'; // Arg-nit
+        if (n.includes('thuj')) return '🌲'; // Thuja
+        if (n.includes('gels')) return '🤒'; // Gelsemium
+        if (n.includes('carc')) return '🎗️'; // Carcinosinum
+        if (n.includes('med')) return '🌊';  // Medorrhinum
+        if (n.includes('syph')) return '🌑'; // Syphilinum
+        
+        return '💊'; // ברירת מחדל
+    }
+
+    // פונקציה להתאמת אימוג'י לסוג (Type)
     function formatType(type, engText) {
         let finalType = type ? type.trim() : "";
         let isAuto = false;
 
-        // אם הסוג ריק, ננסה לנחש לפי האנגלית
         if (!finalType && engText) {
             const e = engText.toLowerCase();
             isAuto = true;
-            if (e.includes('mind') || e.includes('fear') || e.includes('delusion')) finalType = "Mind";
-            else if (e.includes('stomach') || e.includes('rectum') || e.includes('abdomen') || e.includes('food')) finalType = "Digestive";
-            else if (e.includes('head') || e.includes('vertigo')) finalType = "Head";
-            else if (e.includes('eye')) finalType = "Eyes";
-            else if (e.includes('cough') || e.includes('chest') || e.includes('respiration')) finalType = "Chest";
-            else if (e.includes('sleep') || e.includes('dream')) finalType = "Sleep";
+            if (e.includes('mind') || e.includes('fear')) finalType = "Mind";
+            else if (e.includes('stomach') || e.includes('rectum')) finalType = "Digestive";
+            else if (e.includes('head')) finalType = "Head";
             else if (e.includes('skin')) finalType = "Skin";
-            else if (e.includes('general')) finalType = "Generals";
+            else if (e.includes('sleep')) finalType = "Sleep";
             else finalType = "Other";
         }
 
@@ -167,10 +203,9 @@
         else if (t.includes('digest') || t.includes('stomach') || t.includes('rectum')) emoji = '🍎';
         else if (t.includes('head')) emoji = '👤';
         else if (t.includes('chest') || t.includes('lung')) emoji = '🫁';
-        else if (t.includes('sleep') || t.includes('dream')) emoji = '😴';
+        else if (t.includes('sleep')) emoji = '😴';
         else if (t.includes('skin')) emoji = '✨';
         else if (t.includes('general')) emoji = '🌍';
-        else if (t.includes('eye')) emoji = '👁️';
 
         return `<span class="type-tag ${isAuto ? 'auto-gen' : ''}">${emoji} ${finalType}</span>`;
     }
@@ -194,9 +229,11 @@
             }).filter(item => item.remedy || item.eng);
 
             renderTable(rubricData);
-            statusDiv.innerText = `נטענו ${rubricData.length} שורות.`;
+            statusDiv.innerText = `נטענו ${rubricData.length} רובריקות.`;
+            statusDiv.style.color = "var(--success)";
         } catch (error) {
-            statusDiv.innerText = "שגיאה בטעינה.";
+            statusDiv.innerText = "שגיאה בטעינה. ודאי שהקישור תקין.";
+            statusDiv.style.color = "red";
         }
     }
 
@@ -205,7 +242,9 @@
         tableBody.innerHTML = data.map(item => `
             <tr>
                 <td>${formatType(item.type, item.eng)}</td>
-                <td class="remedy-cell">💊 ${item.remedy}</td>
+                <td class="remedy-cell">
+                    ${getRemedyEmoji(item.remedy)} ${item.remedy}
+                </td>
                 <td class="english-text" dir="ltr">${item.eng}</td>
                 <td>${item.heb}</td>
                 <td class="notes-text">${item.notes}</td>
