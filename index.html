@@ -10,14 +10,19 @@
             --accent: #3498db;
             --bg: #f4f7f6;
             --text: #333;
-            --studio: #e74c3c;
+            --studio-text: #7f8c8d; /* אפור עדין */
+            --studio-brand: #34495e; /* פחם מקצועי */
+        }
+
+        * {
+            box-sizing: border-box; /* מבטיח שאלמנטים לא יחרגו מהמסגרת */
         }
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg);
             margin: 0;
-            padding: 15px 15px 60px 15px; /* מרווח תחתון לחתימה */
+            padding: 15px 15px 50px 15px;
             color: var(--text);
         }
 
@@ -55,6 +60,7 @@
             outline: none;
             transition: 0.3s;
             background-color: white;
+            display: block;
         }
 
         select option:first-child {
@@ -65,7 +71,7 @@
 
         select:focus, input:focus { border-color: var(--accent); }
 
-        .search-area { margin-bottom: 20px; }
+        .search-area { margin-bottom: 20px; width: 100%; }
 
         .status { text-align: center; margin-bottom: 10px; font-size: 0.85rem; color: #777; font-weight: bold; }
 
@@ -106,29 +112,28 @@
         .type-tag { background: #f0f0f0; padding: 3px 8px; border-radius: 15px; font-size: 0.8rem; white-space: nowrap; }
         .remedy-name { font-weight: bold; color: var(--primary); white-space: nowrap; }
 
-        /* חתימת סטודיו */
+        /* חתימת סטודיו - מעודכנת לשורה אחת ועדינה */
         footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(5px);
-            padding: 10px;
+            padding: 8px 5px;
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             border-top: 1px solid #eee;
-            color: #555;
+            color: var(--studio-text);
             z-index: 100;
+            white-space: nowrap; /* מונע ירידת שורה */
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .studio-brand {
             font-weight: bold;
-            color: var(--primary);
-        }
-
-        .studio-accent {
-            color: var(--studio);
+            color: var(--studio-brand);
         }
 
         @media screen and (max-width: 768px) {
@@ -139,6 +144,7 @@
             td { border: none; position: relative; padding-right: 35% !important; text-align: left !important; min-height: 35px; display: flex; align-items: center; justify-content: flex-end; }
             td:before { position: absolute; right: 10px; width: 30%; font-weight: bold; color: #888; content: attr(data-label); text-align: right; }
             .rubric-cell { width: 100%; }
+            footer { font-size: 0.7rem; } /* הקטנה נוספת למובייל כדי להבטיח שורה אחת */
         }
     </style>
 </head>
@@ -184,7 +190,7 @@
 </div>
 
 <footer>
-    נוצר ע"י <span class="studio-brand">Pitronic <span class="studio-accent">Studio</span></span> - פתרונות טכנולוגיים מתקדמים © 2026
+    נוצר ע"י <span class="studio-brand">Pitronic Studio</span> - פתרונות טכנולוגיים מתקדמים © 2026
 </footer>
 
 <script>
