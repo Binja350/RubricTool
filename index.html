@@ -10,8 +10,6 @@
             --accent: #3498db;
             --bg: #f4f7f6;
             --text: #333;
-            --success: #27ae60;
-            --note: #e67e22;
         }
 
         body {
@@ -58,22 +56,28 @@
             background-color: white;
         }
 
+        /* הבלטת האופציה הראשונה (כל הסוגים/רמדיס) */
+        select option:first-child {
+            font-weight: bold;
+            color: var(--accent);
+            background: #eef7ff;
+        }
+
         select:focus, input:focus { border-color: var(--accent); }
 
         .search-area { margin-bottom: 20px; }
 
-        .status { text-align: center; margin-bottom: 10px; font-size: 0.85rem; color: #777; }
+        .status { text-align: center; margin-bottom: 10px; font-size: 0.85rem; color: #777; font-weight: bold; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { background: var(--primary); color: white; padding: 12px; text-align: right; font-size: 0.9rem; position: sticky; top: 0; }
         td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: top; }
 
-        /* סידור עמודת האנגלית והכפתור */
         .rubric-cell {
             display: flex;
-            justify-content: space-between; /* דוחף לצדדים */
+            justify-content: space-between;
             align-items: flex-start;
-            direction: ltr; /* מצמיד טקסט לשמאל */
+            direction: ltr;
             text-align: left;
         }
 
@@ -81,7 +85,7 @@
             font-family: 'Arial';
             color: #444;
             margin-top: 2px;
-            flex-grow: 1; /* לוקח את המרחב */
+            flex-grow: 1;
         }
 
         .copy-btn {
@@ -93,8 +97,8 @@
             font-size: 11px;
             color: var(--primary);
             white-space: nowrap;
-            margin-left: 15px; /* רווח מהטקסט */
-            direction: rtl; /* מחזיר את הטקסט בכפתור לעברית */
+            margin-left: 15px;
+            direction: rtl;
         }
         
         .copy-btn:hover { background: var(--accent); color: white; }
@@ -125,11 +129,11 @@
         </p>
     </header>
     <div class="filter-area">
-        <select id="typeFilter" onchange="filterTable()">
-            <option value="">כל הסוגים 🔍</option>
+        <select id="typeFilter" onchange="handleTypeChange()">
+            <option value="">כל הסוגים 🔍 (בחר הכל)</option>
         </select>
-        <select id="remedyFilter" onchange="filterTable()">
-            <option value="">כל הרמדיס 💊</option>
+        <select id="remedyFilter" onchange="handleRemedyChange()">
+            <option value="">כל הרמדיס 💊 (בחר הכל)</option>
         </select>
     </div>
 
@@ -157,14 +161,7 @@
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_3Yju4wccOqBM5OohlEbiY5XA2Vz_3uHGfz_Qn54fbyTkYTkgX95Fy7BFuP7cZFc_vgmzOEHBwCbs/pub?output=csv';
     let rubricData = [];
 
-    function copyText(text, btn) {
-        navigator.clipboard.writeText(text).then(() => {
-            const old = btn.innerText;
-            btn.innerText = '✅';
-            setTimeout(() => btn.innerText = old, 1500);
-        });
-    }
-
+    // פונקציות עזר לאימוג'ים
     function getTypeEmoji(type) {
         const t = (type || "").toLowerCase();
         if (t.includes('mind')) return '🧠';
@@ -175,11 +172,7 @@
         if (t.includes('chest')) return '🫁';
         if (t.includes('skin')) return '✋';
         if (t.includes('head')) return '👤';
-        if (t.includes('ear')) return '👂';
-        if (t.includes('eye')) return '👁️';
-        if (t.includes('extremities')) return '🦵';
         if (t.includes('sleep')) return '😴';
-        if (t.includes('fever')) return '🤒';
         return '📁';
     }
 
@@ -188,23 +181,18 @@
         if (n.includes('lach')) return '🐍';
         if (n.includes('apis')) return '🐝';
         if (n.includes('puls')) return '🌸';
-        if (n.includes('nat-m')) return '🧂';
-        if (n.includes('ars')) return '🧪';
         if (n.includes('nux')) return '🪵';
-        if (n.includes('ign')) return '💔';
-        if (n.includes('tub')) return '🚂';
         if (n.includes('sep')) return '🦑';
         if (n.includes('calc')) return '🐚';
-        if (n.includes('lyc')) return '🥦';
-        if (n.includes('sul')) return '🌋';
-        if (n.includes('merc')) return '🌡️';
-        if (n.includes('bell')) return '🔴';
-        if (n.includes('acon')) return '❄️';
-        if (n.includes('sil')) return '⏳';
-        if (n.includes('staph')) return '🗡️';
-        if (n.includes('phos')) return '💡';
-        if (n.includes('psor')) return '🧥';
         return '💊';
+    }
+
+    function copyText(text, btn) {
+        navigator.clipboard.writeText(text).then(() => {
+            const old = btn.innerText;
+            btn.innerText = '✅';
+            setTimeout(() => btn.innerText = old, 1500);
+        });
     }
 
     async function fetchData() {
@@ -224,21 +212,53 @@
                 };
             }).filter(r => r.remedy || r.eng);
 
-            populateFilters();
             document.getElementById('creditLine').innerText = `(מבוסס על מסד נתונים מתעדכן של עטרה זיידמן) | נטענו ${rubricData.length} רובריקות`;
+            
+            // אתחול ראשוני של הפילטרים עם כל הנתונים
+            updateDropdowns(rubricData, rubricData);
             filterTable();
         } catch (e) {
             document.getElementById('status').innerText = "שגיאה בטעינה.";
         }
     }
 
-    function populateFilters() {
+    // פונקציה לעדכון הרשימות הנפתחות בצורה דינמית
+    function updateDropdowns(filteredForTypes, filteredForRemedies) {
         const typeSelect = document.getElementById('typeFilter');
         const remedySelect = document.getElementById('remedyFilter');
-        const types = [...new Set(rubricData.map(i => i.type))].sort();
-        const remedies = [...new Set(rubricData.map(i => i.remedy))].sort();
-        types.forEach(t => { if(t) typeSelect.innerHTML += `<option value="${t}">${getTypeEmoji(t)} ${t}</option>`; });
-        remedies.forEach(r => { if(r) remedySelect.innerHTML += `<option value="${r}">${getRemedyEmoji(r)} ${r}</option>`; });
+        
+        const currentType = typeSelect.value;
+        const currentRemedy = remedySelect.value;
+
+        // עדכון סוגים
+        const types = [...new Set(filteredForTypes.map(i => i.type))].sort();
+        typeSelect.innerHTML = '<option value="">כל הסוגים 🔍 (בחר הכל)</option>';
+        types.forEach(t => {
+            if(t) typeSelect.innerHTML += `<option value="${t}" ${t === currentType ? 'selected' : ''}>${getTypeEmoji(t)} ${t}</option>`;
+        });
+
+        // עדכון רמדיס
+        const remedies = [...new Set(filteredForRemedies.map(i => i.remedy))].sort();
+        remedySelect.innerHTML = '<option value="">כל הרמדיס 💊 (בחר הכל)</option>';
+        remedies.forEach(r => {
+            if(r) remedySelect.innerHTML += `<option value="${r}" ${r === currentRemedy ? 'selected' : ''}>${getRemedyEmoji(r)} ${r}</option>`;
+        });
+    }
+
+    function handleTypeChange() {
+        const typeVal = document.getElementById('typeFilter').value;
+        // אם נבחר סוג, נצמצם את הרמדיס רק לאלו שקיימים בסוג הזה
+        const relevantRemedies = typeVal ? rubricData.filter(i => i.type === typeVal) : rubricData;
+        updateDropdowns(rubricData, relevantRemedies);
+        filterTable();
+    }
+
+    function handleRemedyChange() {
+        const remedyVal = document.getElementById('remedyFilter').value;
+        // אם נבחרה רמדי, נצמצם את הסוגים רק לאלו שקיימים ברמדי הזו
+        const relevantTypes = remedyVal ? rubricData.filter(i => i.remedy === remedyVal) : rubricData;
+        updateDropdowns(relevantTypes, rubricData);
+        filterTable();
     }
 
     function renderTable(data) {
@@ -264,6 +284,7 @@
         const q = document.getElementById('searchInput').value.toLowerCase();
         const typeF = document.getElementById('typeFilter').value;
         const remedyF = document.getElementById('remedyFilter').value;
+
         const filtered = rubricData.filter(i => {
             const matchQuery = i.remedy.toLowerCase().includes(q) || i.eng.toLowerCase().includes(q) || i.heb.toLowerCase().includes(q);
             const matchType = typeF === "" || i.type === typeF;
