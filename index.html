@@ -10,13 +10,14 @@
             --accent: #3498db;
             --bg: #f4f7f6;
             --text: #333;
+            --studio: #e74c3c;
         }
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg);
             margin: 0;
-            padding: 15px;
+            padding: 15px 15px 60px 15px; /* מרווח תחתון לחתימה */
             color: var(--text);
         }
 
@@ -56,7 +57,6 @@
             background-color: white;
         }
 
-        /* הבלטת ראש הרשימה */
         select option:first-child {
             font-weight: bold;
             color: white;
@@ -70,10 +70,9 @@
         .status { text-align: center; margin-bottom: 10px; font-size: 0.85rem; color: #777; font-weight: bold; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: var(--primary); color: white; padding: 12px; text-align: right; font-size: 0.9rem; position: sticky; top: 0; }
+        th { background: var(--primary); color: white; padding: 12px; text-align: right; font-size: 0.9rem; position: sticky; top: 0; z-index: 10; }
         td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: top; }
 
-        /* סידור עמודת האנגלית והכפתור */
         .rubric-cell {
             display: flex;
             justify-content: space-between;
@@ -107,6 +106,31 @@
         .type-tag { background: #f0f0f0; padding: 3px 8px; border-radius: 15px; font-size: 0.8rem; white-space: nowrap; }
         .remedy-name { font-weight: bold; color: var(--primary); white-space: nowrap; }
 
+        /* חתימת סטודיו */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 10px;
+            text-align: center;
+            font-size: 0.85rem;
+            border-top: 1px solid #eee;
+            color: #555;
+            z-index: 100;
+        }
+
+        .studio-brand {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .studio-accent {
+            color: var(--studio);
+        }
+
         @media screen and (max-width: 768px) {
             .filter-area { grid-template-columns: 1fr; }
             table, thead, tbody, th, td, tr { display: block; }
@@ -123,12 +147,13 @@
 <div class="container">
    <header>
         <h1>איתור רובריקות מתקדם 💊</h1>
-        <p style="margin-top: 10px; color: #555; font-size: 1.1rem; line-height: 1.5;">
-            כלי חיפוש בעברית לאיתור רובריקות הומאופתיות 
+        <p style="margin-top: 10px; color: #555; font-size: 1rem;">
+            מבוסס על מסד הנתונים של עטרה זיידמן
             <br>
-            <span id="creditLine" style="font-size: 0.95rem; color: #777;">(מבוסס על מסד נתונים מתעדכן של עטרה זיידמן)</span>
+            <span id="rubricCount" style="font-size: 0.85rem; color: #888;"></span>
         </p>
     </header>
+
     <div class="filter-area">
         <select id="typeFilter" onchange="handleTypeChange()">
             <option value="">🌟 כל הסוגים (הצג הכל)</option>
@@ -158,20 +183,20 @@
     </table>
 </div>
 
+<footer>
+    נוצר ע"י <span class="studio-brand">Pitronic <span class="studio-accent">Studio</span></span> - פתרונות טכנולוגיים מתקדמים © 2026
+</footer>
+
 <script>
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_3Yju4wccOqBM5OohlEbiY5XA2Vz_3uHGfz_Qn54fbyTkYTkgX95Fy7BFuP7cZFc_vgmzOEHBwCbs/pub?output=csv';
     let rubricData = [];
 
-    // מילוי אוטומטי של אימוג'ים לפי מפתח
     const emojiMap = {
-        // Types
         'mind': '🧠', 'general': '🌍', 'head': '👤', 'eye': '👁️', 'ear': '👂',
         'nose': '👃', 'face': '😊', 'mouth': '👄', 'teeth': '🦷', 'throat': '🧣',
         'stomach': '🤢', 'abdomen': '🐡', 'rectum': '🚽', 'bladder': '💧', 'urine': '🍶',
         'chest': '🫁', 'back': '🦴', 'extremities': '🦵', 'sleep': '😴', 'fever': '🤒',
         'skin': '✋', 'vertigo': '🌀', 'vision': '👓', 'cough': '🗣️',
-        
-        // Remedies
         'nux': '🪵', 'lach': '🐍', 'apis': '🐝', 'puls': '🌸', 'sep': '🦑',
         'ars': '🧪', 'nat-m': '🧂', 'calc': '🐚', 'phos': '💡', 'lyc': '🥦',
         'sul': '🌋', 'merc': '🌡️', 'bell': '🔴', 'acon': '❄️', 'sil': '⏳',
@@ -188,7 +213,6 @@
     function getRemedyEmoji(name) {
         const n = (name || "").toLowerCase();
         for (let key in emojiMap) { if (n.includes(key)) return emojiMap[key]; }
-        // פתרון אוטומטי לרמדיס לא מזוהות - לפי אות ראשונה
         const firstLetter = n.charAt(0).toUpperCase();
         const letterEmojis = {'A':'🅰️','B':'🅱️','C':'©️','D':'','E':'📧','F':'🎏','G':'🌀','H':'♓','I':'ℹ️','J':'🇯','K':'🇰','L':'🇮','M':'Ⓜ️','N':'🅽','O':'⭕','P':'🅿️','Q':'🇶','R':'®️','S':'⚡','T':'🇹','U':'🇺','V':'♈','W':'🇼','X':'🇽','Y':'🇾','Z':'🇿'};
         return letterEmojis[firstLetter] || '💊';
@@ -219,11 +243,11 @@
                 };
             }).filter(r => r.remedy || r.eng);
 
-            document.getElementById('creditLine').innerText = `(מבוסס על מסד נתונים מתעדכן של עטרה זיידמן) | נטענו ${rubricData.length} רובריקות`;
+            document.getElementById('rubricCount').innerText = `נטענו ${rubricData.length} רובריקות`;
             updateDropdowns(rubricData, rubricData);
             filterTable();
         } catch (e) {
-            document.getElementById('status').innerText = "שגיאה בטעינה.";
+            document.getElementById('status').innerText = "שגיאה בטעינת הנתונים.";
         }
     }
 
