@@ -4,19 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💊 איתור רובריקות מתקדם</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="apple-touch-icon" href="icon.png">
+    
     <style>
         :root {
             --primary: #2c3e50;
             --accent: #3498db;
             --bg: #f4f7f6;
             --text: #333;
-            --studio-text: #7f8c8d; /* אפור עדין */
-            --studio-brand: #34495e; /* פחם מקצועי */
+            --studio-text: #7f8c8d;
+            --studio-brand: #34495e;
         }
 
-        * {
-            box-sizing: border-box; /* מבטיח שאלמנטים לא יחרגו מהמסגרת */
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -112,7 +115,6 @@
         .type-tag { background: #f0f0f0; padding: 3px 8px; border-radius: 15px; font-size: 0.8rem; white-space: nowrap; }
         .remedy-name { font-weight: bold; color: var(--primary); white-space: nowrap; }
 
-        /* חתימת סטודיו - מעודכנת לשורה אחת ועדינה */
         footer {
             position: fixed;
             bottom: 0;
@@ -126,15 +128,12 @@
             border-top: 1px solid #eee;
             color: var(--studio-text);
             z-index: 100;
-            white-space: nowrap; /* מונע ירידת שורה */
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .studio-brand {
-            font-weight: bold;
-            color: var(--studio-brand);
-        }
+        .studio-brand { font-weight: bold; color: var(--studio-brand); }
 
         @media screen and (max-width: 768px) {
             .filter-area { grid-template-columns: 1fr; }
@@ -144,7 +143,7 @@
             td { border: none; position: relative; padding-right: 35% !important; text-align: left !important; min-height: 35px; display: flex; align-items: center; justify-content: flex-end; }
             td:before { position: absolute; right: 10px; width: 30%; font-weight: bold; color: #888; content: attr(data-label); text-align: right; }
             .rubric-cell { width: 100%; }
-            footer { font-size: 0.7rem; } /* הקטנה נוספת למובייל כדי להבטיח שורה אחת */
+            footer { font-size: 0.7rem; }
         }
     </style>
 </head>
@@ -320,6 +319,17 @@
     }
 
     fetchData();
+
+    // רישום ה-Service Worker עבור PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                console.log('PWA Service Worker registered');
+            }).catch(err => {
+                console.log('PWA Setup failed: ', err);
+            });
+        });
+    }
 </script>
 </body>
 </html>
