@@ -40,7 +40,6 @@
 
         h1 { color: var(--primary); margin: 0; font-size: 1.8rem; }
 
-        /* אזור הסינונים */
         .filter-area {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -65,12 +64,10 @@
 
         .status { text-align: center; margin-bottom: 10px; font-size: 0.85rem; color: #777; }
 
-        /* טבלה */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { background: var(--primary); color: white; padding: 12px; text-align: right; font-size: 0.9rem; position: sticky; top: 0; }
         td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: top; }
 
-        /* כפתור העתקה */
         .copy-btn {
             background: #eee;
             border: none;
@@ -78,16 +75,16 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 11px;
-            margin-left: 8px;
+            margin-right: 8px;
             color: var(--primary);
+            white-space: nowrap;
         }
         .copy-btn:hover { background: var(--accent); color: white; }
 
-        .type-tag { background: #f0f0f0; padding: 3px 8px; border-radius: 15px; font-size: 0.8rem; }
+        .type-tag { background: #f0f0f0; padding: 3px 8px; border-radius: 15px; font-size: 0.8rem; white-space: nowrap; }
         .remedy-name { font-weight: bold; color: var(--primary); }
-        .rubric-text { font-family: 'Arial'; color: #444; direction: ltr; text-align: left; display: block; margin-top: 5px; }
+        .rubric-text { font-family: 'Arial'; color: #444; direction: ltr; text-align: left; display: inline-block; margin-top: 5px; }
 
-        /* מובייל */
         @media screen and (max-width: 768px) {
             .filter-area { grid-template-columns: 1fr; }
             table, thead, tbody, th, td, tr { display: block; }
@@ -95,7 +92,7 @@
             tr { border: 1px solid #ddd; border-radius: 12px; margin-bottom: 15px; padding: 10px; background: #fff; }
             td { border: none; position: relative; padding-right: 35% !important; text-align: left !important; min-height: 35px; display: flex; align-items: center; justify-content: flex-end; }
             td:before { position: absolute; right: 10px; width: 30%; font-weight: bold; color: #888; content: attr(data-label); text-align: right; }
-            .rubric-text { text-align: left; width: 100%; }
+            .rubric-text { text-align: left; width: auto; }
         }
     </style>
 </head>
@@ -151,6 +148,20 @@
         });
     }
 
+    // אימוג'ים לפי סוג (Type)
+    function getTypeEmoji(type) {
+        const t = (type || "").toLowerCase();
+        if (t.includes('mind')) return '🧠';
+        if (t.includes('general')) return '🌍';
+        if (t.includes('teeth')) return '🦷';
+        if (t.includes('rectum')) return '🚽';
+        if (t.includes('bladder')) return '💧';
+        if (t.includes('chest')) return '🫁';
+        if (t.includes('skin')) return '✋';
+        if (t.includes('head')) return '👤';
+        return '📁';
+    }
+
     function getRemedyEmoji(name) {
         const n = (name || "").toLowerCase();
         if (n.includes('lach')) return '🐍';
@@ -184,11 +195,8 @@
             }).filter(r => r.remedy || r.eng);
 
             populateFilters();
-            
-            // שינוי 1: הצמדת כמות הנתונים לשורת הקרדיט
             document.getElementById('creditLine').innerText = `(מבוסס על מסד נתונים מתעדכן של עטרה זיידמן) | נטענו ${rubricData.length} רובריקות`;
-            
-            filterTable(); // מפעיל את הרינדור הראשוני ועדכון הסטטוס
+            filterTable();
         } catch (e) {
             document.getElementById('status').innerText = "שגיאה בטעינה.";
         }
@@ -197,10 +205,8 @@
     function populateFilters() {
         const typeSelect = document.getElementById('typeFilter');
         const remedySelect = document.getElementById('remedyFilter');
-        
         const types = [...new Set(rubricData.map(i => i.type))].sort();
         const remedies = [...new Set(rubricData.map(i => i.remedy))].sort();
-
         types.forEach(t => { if(t) typeSelect.innerHTML += `<option value="${t}">${t}</option>`; });
         remedies.forEach(r => { if(r) remedySelect.innerHTML += `<option value="${r}">${r}</option>`; });
     }
@@ -209,18 +215,16 @@
         const body = document.getElementById('tableBody');
         body.innerHTML = data.map(item => `
             <tr>
-                <td data-label="סוג"><span class="type-tag">${item.type}</span></td>
+                <td data-label="סוג"><span class="type-tag">${getTypeEmoji(item.type)} ${item.type}</span></td>
                 <td data-label="Remedy" class="remedy-name">${getRemedyEmoji(item.remedy)} ${item.remedy}</td>
                 <td data-label="Rubric (ENG)">
-                    <button class="copy-btn" onclick="copyText('${item.eng.replace(/'/g, "\\'")}', this)">📋 העתק</button>
                     <span class="rubric-text">${item.eng}</span>
+                    <button class="copy-btn" onclick="copyText('${item.eng.replace(/'/g, "\\'")}', this)">📋 העתק</button>
                 </td>
                 <td data-label="תרגום">${item.heb}</td>
                 <td data-label="דגשים">${item.notes}</td>
             </tr>
         `).join('');
-        
-        // שינוי 2: עדכון הטקסט ל "אותרו X רובריקות" מעל הטבלה
         document.getElementById('status').innerText = `אותרו ${data.length} רובריקות`;
     }
 
@@ -228,7 +232,6 @@
         const q = document.getElementById('searchInput').value.toLowerCase();
         const typeF = document.getElementById('typeFilter').value;
         const remedyF = document.getElementById('remedyFilter').value;
-
         const filtered = rubricData.filter(i => {
             const matchQuery = i.remedy.toLowerCase().includes(q) || i.eng.toLowerCase().includes(q) || i.heb.toLowerCase().includes(q);
             const matchType = typeF === "" || i.type === typeF;
