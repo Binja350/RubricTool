@@ -56,11 +56,11 @@
             background-color: white;
         }
 
-        /* הבלטת האופציה הראשונה (כל הסוגים/רמדיס) */
+        /* הבלטת ראש הרשימה */
         select option:first-child {
             font-weight: bold;
-            color: var(--accent);
-            background: #eef7ff;
+            color: white;
+            background-color: var(--accent) !important;
         }
 
         select:focus, input:focus { border-color: var(--accent); }
@@ -73,6 +73,7 @@
         th { background: var(--primary); color: white; padding: 12px; text-align: right; font-size: 0.9rem; position: sticky; top: 0; }
         td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: top; }
 
+        /* סידור עמודת האנגלית והכפתור */
         .rubric-cell {
             display: flex;
             justify-content: space-between;
@@ -130,10 +131,10 @@
     </header>
     <div class="filter-area">
         <select id="typeFilter" onchange="handleTypeChange()">
-            <option value="">כל הסוגים 🔍 (בחר הכל)</option>
+            <option value="">🌟 כל הסוגים (הצג הכל)</option>
         </select>
         <select id="remedyFilter" onchange="handleRemedyChange()">
-            <option value="">כל הרמדיס 💊 (בחר הכל)</option>
+            <option value="">🧪 כל הרמדיס (הצג הכל)</option>
         </select>
     </div>
 
@@ -161,30 +162,36 @@
     const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT_3Yju4wccOqBM5OohlEbiY5XA2Vz_3uHGfz_Qn54fbyTkYTkgX95Fy7BFuP7cZFc_vgmzOEHBwCbs/pub?output=csv';
     let rubricData = [];
 
-    // פונקציות עזר לאימוג'ים
+    // מילוי אוטומטי של אימוג'ים לפי מפתח
+    const emojiMap = {
+        // Types
+        'mind': '🧠', 'general': '🌍', 'head': '👤', 'eye': '👁️', 'ear': '👂',
+        'nose': '👃', 'face': '😊', 'mouth': '👄', 'teeth': '🦷', 'throat': '🧣',
+        'stomach': '🤢', 'abdomen': '🐡', 'rectum': '🚽', 'bladder': '💧', 'urine': '🍶',
+        'chest': '🫁', 'back': '🦴', 'extremities': '🦵', 'sleep': '😴', 'fever': '🤒',
+        'skin': '✋', 'vertigo': '🌀', 'vision': '👓', 'cough': '🗣️',
+        
+        // Remedies
+        'nux': '🪵', 'lach': '🐍', 'apis': '🐝', 'puls': '🌸', 'sep': '🦑',
+        'ars': '🧪', 'nat-m': '🧂', 'calc': '🐚', 'phos': '💡', 'lyc': '🥦',
+        'sul': '🌋', 'merc': '🌡️', 'bell': '🔴', 'acon': '❄️', 'sil': '⏳',
+        'staph': '🗡️', 'psor': '🧥', 'tub': '🚂', 'ign': '💔', 'bry': '🌵',
+        'rhus': '🌿', 'arn': '🩹', 'chin': '☕', 'hep': '🧀'
+    };
+
     function getTypeEmoji(type) {
         const t = (type || "").toLowerCase();
-        if (t.includes('mind')) return '🧠';
-        if (t.includes('general')) return '🌍';
-        if (t.includes('teeth')) return '🦷';
-        if (t.includes('rectum')) return '🚽';
-        if (t.includes('bladder')) return '💧';
-        if (t.includes('chest')) return '🫁';
-        if (t.includes('skin')) return '✋';
-        if (t.includes('head')) return '👤';
-        if (t.includes('sleep')) return '😴';
+        for (let key in emojiMap) { if (t.includes(key)) return emojiMap[key]; }
         return '📁';
     }
 
     function getRemedyEmoji(name) {
         const n = (name || "").toLowerCase();
-        if (n.includes('lach')) return '🐍';
-        if (n.includes('apis')) return '🐝';
-        if (n.includes('puls')) return '🌸';
-        if (n.includes('nux')) return '🪵';
-        if (n.includes('sep')) return '🦑';
-        if (n.includes('calc')) return '🐚';
-        return '💊';
+        for (let key in emojiMap) { if (n.includes(key)) return emojiMap[key]; }
+        // פתרון אוטומטי לרמדיס לא מזוהות - לפי אות ראשונה
+        const firstLetter = n.charAt(0).toUpperCase();
+        const letterEmojis = {'A':'🅰️','B':'🅱️','C':'©️','D':'','E':'📧','F':'🎏','G':'🌀','H':'♓','I':'ℹ️','J':'🇯','K':'🇰','L':'🇮','M':'Ⓜ️','N':'🅽','O':'⭕','P':'🅿️','Q':'🇶','R':'®️','S':'⚡','T':'🇹','U':'🇺','V':'♈','W':'🇼','X':'🇽','Y':'🇾','Z':'🇿'};
+        return letterEmojis[firstLetter] || '💊';
     }
 
     function copyText(text, btn) {
@@ -213,8 +220,6 @@
             }).filter(r => r.remedy || r.eng);
 
             document.getElementById('creditLine').innerText = `(מבוסס על מסד נתונים מתעדכן של עטרה זיידמן) | נטענו ${rubricData.length} רובריקות`;
-            
-            // אתחול ראשוני של הפילטרים עם כל הנתונים
             updateDropdowns(rubricData, rubricData);
             filterTable();
         } catch (e) {
@@ -222,32 +227,23 @@
         }
     }
 
-    // פונקציה לעדכון הרשימות הנפתחות בצורה דינמית
     function updateDropdowns(filteredForTypes, filteredForRemedies) {
         const typeSelect = document.getElementById('typeFilter');
         const remedySelect = document.getElementById('remedyFilter');
-        
         const currentType = typeSelect.value;
         const currentRemedy = remedySelect.value;
 
-        // עדכון סוגים
         const types = [...new Set(filteredForTypes.map(i => i.type))].sort();
-        typeSelect.innerHTML = '<option value="">כל הסוגים 🔍 (בחר הכל)</option>';
-        types.forEach(t => {
-            if(t) typeSelect.innerHTML += `<option value="${t}" ${t === currentType ? 'selected' : ''}>${getTypeEmoji(t)} ${t}</option>`;
-        });
+        typeSelect.innerHTML = '<option value="">🌟 כל הסוגים (הצג הכל)</option>';
+        types.forEach(t => { if(t) typeSelect.innerHTML += `<option value="${t}" ${t === currentType ? 'selected' : ''}>${getTypeEmoji(t)} ${t}</option>`; });
 
-        // עדכון רמדיס
         const remedies = [...new Set(filteredForRemedies.map(i => i.remedy))].sort();
-        remedySelect.innerHTML = '<option value="">כל הרמדיס 💊 (בחר הכל)</option>';
-        remedies.forEach(r => {
-            if(r) remedySelect.innerHTML += `<option value="${r}" ${r === currentRemedy ? 'selected' : ''}>${getRemedyEmoji(r)} ${r}</option>`;
-        });
+        remedySelect.innerHTML = '<option value="">🧪 כל הרמדיס (הצג הכל)</option>';
+        remedies.forEach(r => { if(r) remedySelect.innerHTML += `<option value="${r}" ${r === currentRemedy ? 'selected' : ''}>${getRemedyEmoji(r)} ${r}</option>`; });
     }
 
     function handleTypeChange() {
         const typeVal = document.getElementById('typeFilter').value;
-        // אם נבחר סוג, נצמצם את הרמדיס רק לאלו שקיימים בסוג הזה
         const relevantRemedies = typeVal ? rubricData.filter(i => i.type === typeVal) : rubricData;
         updateDropdowns(rubricData, relevantRemedies);
         filterTable();
@@ -255,7 +251,6 @@
 
     function handleRemedyChange() {
         const remedyVal = document.getElementById('remedyFilter').value;
-        // אם נבחרה רמדי, נצמצם את הסוגים רק לאלו שקיימים ברמדי הזו
         const relevantTypes = remedyVal ? rubricData.filter(i => i.remedy === remedyVal) : rubricData;
         updateDropdowns(relevantTypes, rubricData);
         filterTable();
@@ -296,6 +291,5 @@
 
     fetchData();
 </script>
-
 </body>
 </html>
