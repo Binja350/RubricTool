@@ -107,7 +107,7 @@
         <p style="margin-top: 10px; color: #555; font-size: 1.1rem; line-height: 1.5;">
             כלי חיפוש בעברית לאיתור רובריקות הומאופתיות 
             <br>
-            <span style="font-size: 0.95rem; color: #777;">(מבוסס על מסד נתונים מתעדכן של עטרה זיידמן)</span>
+            <span id="creditLine" style="font-size: 0.95rem; color: #777;">(מבוסס על מסד נתונים מתעדכן של עטרה זיידמן)</span>
         </p>
     </header>
     <div class="filter-area">
@@ -184,8 +184,11 @@
             }).filter(r => r.remedy || r.eng);
 
             populateFilters();
-            renderTable(rubricData);
-            document.getElementById('status').innerText = `נטענו ${rubricData.length} רובריקות`;
+            
+            // שינוי 1: הצמדת כמות הנתונים לשורת הקרדיט
+            document.getElementById('creditLine').innerText = `(מבוסס על מסד נתונים מתעדכן של עטרה זיידמן) | נטענו ${rubricData.length} רובריקות`;
+            
+            filterTable(); // מפעיל את הרינדור הראשוני ועדכון הסטטוס
         } catch (e) {
             document.getElementById('status').innerText = "שגיאה בטעינה.";
         }
@@ -216,6 +219,9 @@
                 <td data-label="דגשים">${item.notes}</td>
             </tr>
         `).join('');
+        
+        // שינוי 2: עדכון הטקסט ל "אותרו X רובריקות" מעל הטבלה
+        document.getElementById('status').innerText = `אותרו ${data.length} רובריקות`;
     }
 
     function filterTable() {
