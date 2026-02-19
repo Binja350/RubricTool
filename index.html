@@ -148,7 +148,6 @@
         });
     }
 
-    // אימוג'ים לפי סוג (Type)
     function getTypeEmoji(type) {
         const t = (type || "").toLowerCase();
         if (t.includes('mind')) return '🧠';
@@ -205,10 +204,18 @@
     function populateFilters() {
         const typeSelect = document.getElementById('typeFilter');
         const remedySelect = document.getElementById('remedyFilter');
+        
         const types = [...new Set(rubricData.map(i => i.type))].sort();
         const remedies = [...new Set(rubricData.map(i => i.remedy))].sort();
-        types.forEach(t => { if(t) typeSelect.innerHTML += `<option value="${t}">${t}</option>`; });
-        remedies.forEach(r => { if(r) remedySelect.innerHTML += `<option value="${r}">${r}</option>`; });
+
+        // הוספת אימוג'ים לאפשרויות ברשימה הנפתחת
+        types.forEach(t => { 
+            if(t) typeSelect.innerHTML += `<option value="${t}">${getTypeEmoji(t)} ${t}</option>`; 
+        });
+        
+        remedies.forEach(r => { 
+            if(r) remedySelect.innerHTML += `<option value="${r}">${getRemedyEmoji(r)} ${r}</option>`; 
+        });
     }
 
     function renderTable(data) {
