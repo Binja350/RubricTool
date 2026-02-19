@@ -1,0 +1,16 @@
+{
+  "name": "איתור רובריקות מתקדם",
+  "short_name": "רובריקות",
+  "description": "כלי לאיתור רובריקות הומאופתיות - Pitronic Studio",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f7f6",
+  "theme_color": "#2c3e50",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
