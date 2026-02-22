@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>איתור רובריקות - Pitronic Studio</title>
+    <title>💊 איתור רובריקות - Pitronic Studio</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2c3e50">
@@ -52,12 +52,7 @@
             margin-bottom: 10px;
         }
 
-        .header-logo {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-        }
-
+        .header-logo { width: 50px; height: 50px; object-fit: contain; }
         h1 { color: var(--primary); margin: 0; font-size: 1.8rem; }
         .credit-line { color: #64748b; font-size: 0.95rem; margin: 5px 0; }
 
@@ -101,21 +96,20 @@
         }
 
         .remedy-abbr:hover::after {
-        content: attr(data-full);
-        position: absolute;
-        bottom: 130%;
-        left: 0; /* נצמד לצד שמאל של המילה כדי להיכנס למסך */
-        background: rgba(44, 62, 80, 0.95);
-        color: white;
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 0.8rem;
-        white-space: nowrap;
-        z-index: 1000;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        pointer-events: none;
-    }
-        
+            content: attr(data-full);
+            position: absolute;
+            bottom: 130%;
+            left: 0;
+            background: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
         .note-tag {
             display: inline-flex;
             align-items: center;
@@ -124,23 +118,13 @@
             border-radius: 20px;
             font-size: 0.8rem;
             margin: 3px;
-            white-space: nowrap;
         }
 
         .note-emoji { margin-left: 6px; font-size: 1.1rem; }
 
         .copy-btn {
-            background: white;
-            border: 1px solid #cbd5e1;
-            padding: 5px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-right: 10px;
-            transition: all 0.2s;
-            float: right;
+            background: white; border: 1px solid #cbd5e1; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-right: 10px; float: right;
         }
-        .copy-btn:hover { background: #f1f5f9; border-color: var(--accent); }
 
         footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 10px; text-align: center; border-top: 1px solid var(--border); font-size: 0.75rem; color: #64748b; }
 
@@ -194,9 +178,21 @@
         'mind': '🧠', 'head': '👤', 'eye': '👁️', 'ear': '👂', 'nose': '👃', 'throat': '🧣',
         'stomach': '🤢', 'abdomen': '🐡', 'chest': '🫁', 'back': '🦴', 'extremities': '🦵',
         'sleep': '😴', 'fever': '🤒', 'skin': '✋', 'general': '🌍',
-        'החמרה': '📉', 'הטבה': '📈', 'לילה': '🌙', 'בוקר': '🌅', 'ערב': '🌆', 'צהריים': '☀️',
-        'תנועה': '🏃', 'מנוחה': '🧘', 'קור': '❄️', 'חום': '🔥', 'אכילה': '🍽️', 'שתייה': '🥤'
+        'החמרה': '📉', 'הטבה': '📈', 'לילה': '🌙', 'בוקר': '🌅', 'ערב': '🌆', 'צהריים': '☀️'
     };
+
+    function getTypeEmoji(type) {
+        const t = (type || "").toLowerCase();
+        for (let key in emojiMap) { if (t.includes(key)) return emojiMap[key]; }
+        return '📌';
+    }
+
+    function getRemedyEmoji(name) {
+        const n = (name || "").toLowerCase();
+        const specificEmojis = { 'apis': '🐝', 'arn': '🩹', 'acon': '❄️', 'ars': '🧪', 'bell': '🔴', 'bry': '🌵', 'calc': '🐚', 'phos': '💡', 'puls': '🌸', 'sep': '🦑', 'sil': '⏳', 'staph': '🗡️', 'sul': '🌋', 'lach': '🐍', 'lyc': '🥦', 'nat': '🧂', 'nux': '🪵' };
+        for (let key in specificEmojis) { if (n.includes(key)) return specificEmojis[key]; }
+        return '💊';
+    }
 
     function getAbbr(fullName) {
         if (!fullName) return "";
@@ -208,31 +204,18 @@
 
     function formatNotes(notes) {
         if (!notes) return "";
-        // חלוקה לפי הסימן | כפי שביקשת
         return notes.split('|').map(n => {
             const clean = n.trim();
             if (!clean) return "";
-            let emoji = '📌';
-            for (let key in emojiMap) {
-                if (clean.toLowerCase().includes(key)) { emoji = emojiMap[key]; break; }
-            }
-            return `<span class="note-tag"><span class="note-emoji">${emoji}</span>${clean}</span>`;
+            return `<span class="note-tag"><span class="note-emoji">${getTypeEmoji(clean)}</span>${clean}</span>`;
         }).join('');
     }
 
     async function copyText(text, btn) {
-        try {
-            await navigator.clipboard.writeText(text);
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = '✅';
-            btn.style.borderColor = '#27ae60';
-            setTimeout(() => {
-                btn.innerHTML = originalContent;
-                btn.style.borderColor = '#cbd5e1';
-            }, 1500);
-        } catch (err) {
-            console.error('Failed to copy', err);
-        }
+        await navigator.clipboard.writeText(text);
+        const old = btn.innerHTML;
+        btn.innerHTML = '✅';
+        setTimeout(() => btn.innerHTML = old, 1500);
     }
 
     async function fetchData() {
@@ -249,21 +232,20 @@
                     notes: (cols[3] || "").replace(/"/g, '').trim()
                 };
             }).filter(r => r.remedy || r.eng);
-
-            document.getElementById('rubricCount').innerText = `נטענו ${rubricData.length} רשומות`;
+            document.getElementById('rubricCount').innerText = `נטענו ${rubricData.length} רובריקות`;
             populateFilters();
             filterTable();
-        } catch (e) { console.error("טעינה נכשלה", e); }
+        } catch (e) { console.error(e); }
     }
 
     function populateFilters() {
         const rSel = document.getElementById('remedyFilter');
         const remedies = [...new Set(rubricData.map(i => i.remedy))].sort();
-        remedies.forEach(r => { if(r) rSel.innerHTML += `<option value="${r}">${r}</option>`; });
+        remedies.forEach(r => { if(r) rSel.innerHTML += `<option value="${r}">${getRemedyEmoji(r)} ${r}</option>`; });
         
         const tSel = document.getElementById('typeFilter');
-        const categories = ['Mind', 'General', 'Head', 'Eye', 'Ear', 'Nose', 'Face', 'Mouth', 'Teeth', 'Throat', 'Stomach', 'Abdomen', 'Rectum', 'Bladder', 'Urine', 'Male', 'Female', 'Respiration', 'Cough', 'Chest', 'Back', 'Extremities', 'Sleep', 'Chill', 'Fever', 'Perspiration', 'Skin'];
-        categories.forEach(t => { tSel.innerHTML += `<option value="${t}">${t}</option>`; });
+        const categories = ['Mind', 'Head', 'Eye', 'Ear', 'Nose', 'Throat', 'Stomach', 'Abdomen', 'Chest', 'Back', 'Extremities', 'Sleep', 'Fever', 'Skin', 'General'];
+        categories.forEach(t => { tSel.innerHTML += `<option value="${t}">${getTypeEmoji(t)} ${t}</option>`; });
     }
 
     function filterTable() {
@@ -284,16 +266,15 @@
                 <td data-label="הערות">${formatNotes(i.notes)}</td>
                 <td data-label="תרגום">${i.heb}</td>
                 <td data-label="English" class="ltr">
-                    <button class="copy-btn" title="העתק רובריקה" onclick="copyText('${i.eng.replace(/'/g,"\\'")}', this)">📋</button>
+                    <button class="copy-btn" onclick="copyText('${i.eng.replace(/'/g,"\\'")}', this)">📋</button>
                     ${i.eng}
                 </td>
                 <td data-label="Remedy" class="ltr">
-                    <span class="remedy-abbr" data-full="${i.remedy}">${getAbbr(i.remedy)}</span>
+                    ${getRemedyEmoji(i.remedy)} <span class="remedy-abbr" data-full="${i.remedy}">${getAbbr(i.remedy)}</span>
                 </td>
             </tr>
         `).join('');
     }
-
     fetchData();
 </script>
 </body>
