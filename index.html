@@ -80,7 +80,7 @@
 
         select:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); }
 
-        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; border: 1px solid var(--border); border-radius: 10px; }
         th { background: #f1f5f9; color: var(--primary); padding: 15px; text-align: right; font-size: 0.95rem; border-bottom: 2px solid var(--border); border-left: 1px solid var(--border); }
         td { padding: 12px 15px; border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); vertical-align: middle; }
         th:last-child, td:last-child { border-left: none; }
@@ -101,20 +101,21 @@
         }
 
         .remedy-abbr:hover::after {
-            content: attr(data-full);
-            position: absolute;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            z-index: 100;
-        }
-
+        content: attr(data-full);
+        position: absolute;
+        bottom: 130%;
+        left: 0; /* נצמד לצד שמאל של המילה כדי להיכנס למסך */
+        background: rgba(44, 62, 80, 0.95);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        z-index: 1000;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        pointer-events: none;
+    }
+        
         .note-tag {
             display: inline-flex;
             align-items: center;
